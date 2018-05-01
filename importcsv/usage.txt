@@ -1,0 +1,42 @@
+[content]
+¥importcsv.vbs	definition of importcsv class
+¥importcsv.wsf	test script for verifing importcsv class
+
+[verification procedure]
+cscript importcsv.wsf [input_file_path] [column_name_1] [column_name_2] ...
+ex) cscript /nologo importcsv.wsf input.csv data
+
+	input.csv:
+	key,data,line
+	abc,"ABC,100"",",1st
+	xyz,"XYZ,200
+	,",2nd
+
+	stdout:
+	data:{ABC,100",}
+	--------
+	data:{XYZ,200
+	,}
+	--------
+	--- 0(2) ---
+
+	last line of stdout is past time(sec) & total line count.
+	so above case, past time is 0 second, total line count is 2.
+
+[importcsv class usage]
+¥csv file include header line
+	set objcsv = new importcsv
+	objcsv.open("input.csv", NULL)
+
+¥csv file not include header line
+	set objcsv = new importcsv
+	objcsv.open("input.csv", array("col1", "col2", "col3"))
+
+	writing with powershell
+	import-csv -header "col1", "col2", "col3"
+
+¥file has skip line before header line
+	set objfile = createobject("Scripting.FileSystemObject").opentextfile("input.csv", 1)
+	objfile.readline
+	set objcsv = new importcsv
+	objcsv.open(objfile, NULL)

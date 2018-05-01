@@ -1,0 +1,39 @@
+<job id="test">
+<comment>importcsv verification program</comment>
+<object id="objFileSys" progid="Scripting.FileSystemObject" />
+<script language="VBScript" src="./importcsv.vbs"/>
+<script language="VBScript">
+if 0 < wscript.arguments.count then
+	dim objCsv, linecount, st, i
+	set objCsv = new importcsv
+	if not objCsv.open(wscript.arguments(0), null) then
+		wscript.echo wscript.arguments(0), err.description
+		wscript.quit(err.number)
+	end if
+
+	linecount = 0
+	st = now()
+
+	if 1 < wscript.arguments.count then
+		do while objCsv.readrecord
+			linecount = linecount + 1
+			for i = 1 to wscript.arguments.count - 1
+				wscript.echo wscript.arguments(i) & ":{" & objCsv.item(wscript.arguments(i)) & "}"
+			next
+			wscript.echo "--------"
+		loop
+	else
+		do while objCsv.readrecord
+			linecount = linecount + 1
+		loop
+	end if
+
+	wscript.echo "--- " & datediff("s", st, now()) & "(" & linecount & ") ---"
+	objCsv.close
+	set objCsv = nothing
+else
+	wscript.echo "cscript importcsv.vbs [input_file_path]"
+	wscript.echo "ex) cscript importcsv.vbs input.csv"
+end if
+</script>
+</job>
